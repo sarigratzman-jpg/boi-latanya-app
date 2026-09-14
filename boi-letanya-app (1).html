@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בואי לתניא – שרי גרצמן</title>
+<meta name="theme-color" content="#5a132c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="בואי לתניא">
+<link rel="apple-touch-icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
+<link rel="icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
+<link rel="manifest" id="pwa-manifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Frank+Ruhl+Libre:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#5a132c;
+    --wine-deep:#3d0c1d;
+    --rose:#9e3851;
+    --rose-soft:#c97a8c;
+    --blush:#f3e3de;
+    --cream:#fbf5ee;
+    --gold:#b98a4e;
+    --gold-soft:#e6cfa0;
+    --ink:#3a1420;
+    --ink-soft:#7a5560;
+    --shadow: 0 10px 30px rgba(58,20,32,.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Assistant',sans-serif;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(230,207,160,.35), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 100% 0%, rgba(201,120,140,.18), transparent 55%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 60px;}
+
+  /* header */
+  header{text-align:center;margin-bottom:22px;}
+  .logo{width:74px;height:74px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow);border:3px solid var(--cream);}
+  h1{
+    font-family:'Suez One',serif;
+    font-size:2rem;
+    color:var(--wine);
+    margin:14px 0 2px;
+    letter-spacing:.5px;
+  }
+  .byline{font-size:.95rem;color:var(--ink-soft);margin:0;}
+  .heart{color:var(--rose);}
+
+  /* tabs */
+  .tabs{
+    display:flex;gap:8px;justify-content:center;margin:26px 0 20px;
+    background:rgba(255,255,255,.55);
+    border:1px solid var(--gold-soft);
+    padding:5px;border-radius:999px;
+    max-width:420px;margin-inline:auto;
+  }
+  .tab{
+    flex:1;text-align:center;padding:10px 14px;border-radius:999px;
+    font-weight:700;font-size:.95rem;cursor:pointer;color:var(--ink-soft);
+    transition:background .25s, color .25s;
+    user-select:none;
+  }
+  .tab.active{background:var(--wine);color:#fff;box-shadow:var(--shadow);}
+
+  .panel{display:none;animation:fade .35s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* --- ask panel --- */
+  .ask-card{
+    background:linear-gradient(180deg,#fff, var(--blush) 140%);
+    border:1px solid var(--gold-soft);
+    border-radius:22px;
+    padding:34px 28px;
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  .ask-card h2{
+    font-family:'Frank Ruhl Libre',serif;
+    font-size:1.5rem;
+    color:var(--wine);
+    margin:0 0 8px;
+    font-weight:600;
+  }
+  .ask-card p.sub{color:var(--ink-soft);margin:0 0 22px;font-size:.98rem;line-height:1.6;}
+  textarea{
+    width:100%;min-height:110px;resize:vertical;
+    border:1.5px solid var(--gold-soft);
+    border-radius:14px;
+    padding:16px;
+    font-family:'Assistant',sans-serif;
+    font-size:1.05rem;
+    background:#fffdfb;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .2s;
+  }
+  textarea:focus{border-color:var(--rose);}
+  .examples{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 20px;}
+  .chip{
+    font-size:.85rem;padding:6px 14px;border-radius:999px;
+    background:rgba(154,56,81,.08);color:var(--rose);border:1px solid rgba(154,56,81,.18);
+    cursor:pointer;transition:background .2s;
+  }
+  .chip:hover{background:rgba(154,56,81,.16);}
+  button.primary{
+    background:linear-gradient(135deg,var(--wine),var(--rose));
+    color:#fff;border:none;border-radius:999px;
+    padding:14px 34px;font-size:1.05rem;font-weight:700;
+    cursor:pointer;box-shadow:0 8px 20px rgba(90,19,44,.28);
+    transition:transform .15s, box-shadow .15s;
+    font-family:'Assistant',sans-serif;
+  }
+  button.primary:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(90,19,44,.35);}
+  button.primary:disabled{opacity:.6;cursor:default;transform:none;}
+
+  .result{
+    margin-top:26px;text-align:right;
+    background:#fff;
+    border:1px solid var(--gold-soft);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:var(--shadow);
+    display:none;
+  }
+  .result.show{display:block;animation:fade .4s ease;}
+  .result .kicker{font-size:.85rem;color:var(--gold);font-weight:700;margin-bottom:6px;}
+  .result h3{
+    font-family:'Frank Ruhl Libre',serif;
+    color:var(--wine);font-size:1.3rem;margin:0 0 4px;
+  }
+  .result .chapter-tag{font-size:.85rem;color:var(--ink-soft);margin-bottom:14px;}
+  .result p.reason{line-height:1.75;color:var(--ink);margin:0 0 18px;font-size:1rem;}
+  .video-frame{
+    position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.18);margin-bottom:14px;background:#000;
+  }
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .result-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .link-btn{
+    display:inline-block;font-size:.9rem;font-weight:700;color:var(--rose);
+    text-decoration:none;border:1.5px solid var(--rose-soft);border-radius:999px;
+    padding:8px 18px;transition:background .2s;
+  }
+  .link-btn:hover{background:rgba(154,56,81,.08);}
+  .loading{display:none;align-items:center;justify-content:center;gap:10px;margin-top:20px;color:var(--ink-soft);font-size:.95rem;}
+  .loading.show{display:flex;}
+  .spinner{
+    width:18px;height:18px;border-radius:50%;
+    border:3px solid var(--gold-soft);border-top-color:var(--rose);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .error-box{
+    display:none;margin-top:20px;background:#fdf3f0;border:1px solid #e6b8ae;
+    color:#8a3a2a;padding:14px 18px;border-radius:12px;font-size:.92rem;line-height:1.6;text-align:right;
+  }
+  .error-box.show{display:block;}
+
+  /* --- library panel --- */
+  .lib-search{
+    width:100%;padding:13px 18px;border-radius:999px;
+    border:1.5px solid var(--gold-soft);background:#fff;
+    font-family:'Assistant',sans-serif;font-size:1rem;color:var(--ink);
+    margin-bottom:18px;outline:none;
+  }
+  .lib-search:focus{border-color:var(--rose);}
+  .accordion{border-top:1px solid var(--gold-soft);}
+  .chapter{border-bottom:1px solid var(--gold-soft);}
+  .chapter-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 6px;cursor:pointer;
+  }
+  .chapter-head-text{display:flex;flex-direction:column;gap:2px;}
+  .chapter-name{font-family:'Frank Ruhl Libre',serif;font-weight:600;color:var(--wine);font-size:1.08rem;}
+  .chapter-topic{font-size:.85rem;color:var(--ink-soft);}
+  .chapter-count{font-size:.8rem;color:var(--gold);white-space:nowrap;margin-inline-start:10px;}
+  .chevron{
+    width:11px;height:11px;border-inline-end:2px solid var(--rose);border-block-end:2px solid var(--rose);
+    transform:rotate(45deg);transition:transform .25s;flex-shrink:0;margin-inline-start:10px;
+  }
+  .chapter.open .chevron{transform:rotate(-135deg);}
+  .lesson-list{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .chapter.open .lesson-list{max-height:600px;}
+  .lesson{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 6px 10px 0;margin-inline-start:6px;
+    border-top:1px dashed var(--gold-soft);
+    text-decoration:none;color:var(--ink);
+  }
+  .lesson:first-child{border-top:none;}
+  .lesson-title{font-size:.96rem;}
+  .play-dot{
+    width:26px;height:26px;border-radius:50%;background:var(--blush);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .play-dot svg{width:10px;height:10px;fill:var(--rose);}
+  .no-results{text-align:center;color:var(--ink-soft);padding:30px 0;font-size:.95rem;}
+
+  footer{text-align:center;margin-top:40px;color:var(--ink-soft);font-size:.85rem;}
+
+  /* --- topics panel --- */
+  .topic-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:10px;}
+  .topic-pill{
+    background:#fff;border:1.5px solid var(--gold-soft);color:var(--wine);
+    padding:10px 18px;border-radius:16px;font-size:.95rem;font-weight:600;
+    cursor:pointer;transition:background .2s, transform .15s;
+    font-family:'Frank Ruhl Libre',serif;
+    box-shadow:0 3px 10px rgba(58,20,32,.06);
+  }
+  .topic-pill:hover{background:var(--blush);transform:translateY(-1px);}
+
+  /* --- admin --- */
+  .admin-overlay{
+    display:none;position:fixed;inset:0;background:rgba(58,20,32,.55);
+    align-items:center;justify-content:center;z-index:999;padding:20px;
+  }
+  .admin-overlay.show{display:flex;}
+  .admin-box{
+    background:#fff;border-radius:20px;padding:28px;max-width:420px;width:100%;
+    box-shadow:var(--shadow);max-height:88vh;overflow-y:auto;
+  }
+  .admin-box h3{font-family:'Frank Ruhl Libre',serif;color:var(--wine);margin:0 0 4px;text-align:center;}
+  .admin-box .sub{color:var(--ink-soft);font-size:.9rem;text-align:center;margin:0 0 16px;}
+  .admin-box input{
+    width:100%;padding:12px 14px;border:1.5px solid var(--gold-soft);border-radius:12px;
+    margin-bottom:10px;font-family:'Assistant',sans-serif;font-size:1rem;outline:none;
+  }
+  .admin-box input:focus{border-color:var(--rose);}
+  .admin-box button.primary{width:100%;margin-bottom:10px;}
+  .admin-close{display:block;text-align:center;margin:6px auto 0;width:fit-content;}
+  .admin-divider{border:none;border-top:1px solid var(--gold-soft);margin:18px 0;}
+  .admin-success{
+    display:none;background:#eef7ee;color:#2f6b2f;border:1px solid #bfe0bf;
+    padding:10px 14px;border-radius:10px;font-size:.9rem;margin-bottom:10px;text-align:center;
+  }
+  .admin-success.show{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="https://boeilatanya.ravpage.co.il/1000348220.png" alt="בואי לתניא">
+    <h1>בואי לתניא</h1>
+    <p class="byline">עם שרי גרצמן <span class="heart">♡</span></p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="ask">מה עובר עלייך?</div>
+    <div class="tab" data-tab="topics">לפי נושא</div>
+    <div class="tab" data-tab="library">ספריית השיעורים</div>
+  </div>
+
+  <section class="panel active" id="panel-ask">
+    <div class="ask-card">
+      <h2>ספרי לי מה קורה אצלך</h2>
+      <p class="sub">מצב רגשי, שאלה שמעסיקה אותך, או משהו שאת מתמודדת איתו עכשיו — ונביא לך שיעור מהתניא שמדבר בדיוק לזה.</p>
+      <textarea id="feeling-input" placeholder="לדוגמה: אני מרגישה בודדה לאחרונה..."></textarea>
+      <div class="examples">
+        <div class="chip" data-ex="אני מרגישה בודדה לאחרונה">בדידות</div>
+        <div class="chip" data-ex="קשה לי להיות בשמחה בתקופה הזאת">חוסר שמחה</div>
+        <div class="chip" data-ex="אני כועסת על מישהי ולא מצליחה לעבור את זה">כעס</div>
+        <div class="chip" data-ex="אני מרגישה שאני לא מספיק אוהבת את עצמי">קבלה עצמית</div>
+      </div>
+      <div>
+        <button class="primary" id="ask-btn">מצאי לי שיעור מתאים</button>
+      </div>
+      <div class="loading" id="loading"><div class="spinner"></div><span>מחפשת את השיעור המתאים לך…</span></div>
+      <div class="error-box" id="error-box"></div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="kicker">השיעור שמתאים לך עכשיו</div>
+      <h3 id="res-title"></h3>
+      <div class="chapter-tag" id="res-chapter"></div>
+      <p class="reason" id="res-reason"></p>
+      <div class="video-frame"><iframe id="res-iframe" src="" allowfullscreen></iframe></div>
+      <div class="result-actions">
+        <a class="link-btn" id="res-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
+        <span class="link-btn" id="res-another" style="cursor:pointer;">שיעור נוסף בנושא הזה</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-topics">
+    <p class="sub" style="text-align:center;margin:0 0 18px;color:var(--ink-soft);">בחרי נושא שקרוב אלייך עכשיו:</p>
+    <div class="topic-grid" id="topic-grid"></div>
+    <div class="result" id="topic-result">
+      <div class="kicker" id="topic-kicker">השיעור</div>
+      <h3 id="topic-title"></h3>
+      <div class="chapter-tag" id="topic-chapter"></div>
+      <div class="video-frame"><iframe id="topic-iframe" src="" allowfullscreen></iframe></div>
+      <div class="result-actions">
+        <a class="link-btn" id="topic-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-library">
+    <input class="lib-search" id="lib-search" placeholder="חיפוש בספרייה — פרק, נושא או מילת מפתח...">
+    <div class="accordion" id="accordion"></div>
+    <div class="no-results" id="no-results" style="display:none;">לא נמצאו שיעורים תואמים</div>
+  </section>
+
+  <footer>בואי לתניא · שרי גרצמן <span id="admin-trigger" style="cursor:default;">♡</span></footer>
+</div>
+
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-box">
+    <div id="admin-login">
+      <h3>אזור ניהול</h3>
+      <p class="sub">כניסה לשרי בלבד</p>
+      <input type="password" id="admin-password" placeholder="סיסמה">
+      <button class="primary" id="admin-login-btn">כניסה</button>
+      <div class="error-box" id="admin-login-error">סיסמה שגויה</div>
+      <span class="link-btn admin-close" id="admin-close-1">סגירה</span>
+    </div>
+    <div id="admin-panel" style="display:none;">
+      <h3>הוספת שיעור</h3>
+      <input list="chapter-list" id="admin-chapter" placeholder="שם הפרק (לדוגמה: פרק מ״ב)">
+      <datalist id="chapter-list"></datalist>
+      <input id="admin-topic" placeholder="נושא הפרק (לא חובה, רק אם רוצים תגית נושא)">
+      <input id="admin-title" placeholder="כותרת השיעור">
+      <input id="admin-link" placeholder="קישור youtube.com/... או youtu.be/...">
+      <button class="primary" id="admin-add-btn">הוספת שיעור</button>
+      <div class="error-box" id="admin-add-error"></div>
+      <div class="admin-success" id="admin-success">השיעור נוסף! (זמנית, עד שתייצאי קובץ מעודכן)</div>
+      <hr class="admin-divider">
+      <p class="sub" style="text-align:right;">כשסיימת להוסיף, ייצאי קובץ מעודכן ושלחי אותו כדי שנעדכן את הגרסה החיה.</p>
+      <button class="primary" id="admin-export-btn">ייצוא קובץ מעודכן</button>
+      <span class="link-btn admin-close" id="admin-close-2">סגירה</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// PWA manifest (built as a blob so the app is installable even as a single file)
+(function(){
+  const manifest = {
+    name: "בואי לתניא - שרי גרצמן",
+    short_name: "בואי לתניא",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#fbf5ee",
+    theme_color: "#5a132c",
+    dir: "rtl",
+    lang: "he",
+    icons: [
+      { src: "https://boeilatanya.ravpage.co.il/1000348220.png", sizes: "192x192", type: "image/png" },
+      { src: "https://boeilatanya.ravpage.co.il/1000348220.png", sizes: "512x512", type: "image/png" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
+  document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+})();
+
+/*VIDEOS_START*/
+let VIDEOS = [{"chapter": "הקדמת ספר התניא", "topic": null, "items": [{"title": "חלק א׳", "link": "https://youtu.be/rqwebjjey6s"}]}, {"chapter": "פרק א׳", "topic": null, "items": [{"title": "שיעור ב׳", "link": "https://youtu.be/LbPHbpucsW0"}, {"title": "שיעור ג׳", "link": "https://youtu.be/F7GBngoHZtc"}]}, {"chapter": "פרק ב׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/swDqR6fYE3w"}, {"title": "שיעור ב׳", "link": "https://youtu.be/KR2Ko4FurZ4"}, {"title": "שיעור ג׳", "link": "https://youtu.be/yxgL_d9ismQ"}]}, {"chapter": "פרק ד׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/O_StlMIgBzA"}, {"title": "שיעור ב׳", "link": "https://youtu.be/gvT6QS7Eda0"}, {"title": "שיעור ג׳", "link": "https://youtu.be/7GtmILF5gMw"}, {"title": "שיעור ד׳", "link": "https://youtu.be/PRtZbgFRoXQ"}, {"title": "שיעור ה׳", "link": "https://youtu.be/CBOLsjSEtiE"}]}, {"chapter": "פרק ה׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/vmilwV5TDtg"}, {"title": "שיעור ב׳", "link": "https://youtu.be/8TdCJCkDVVk"}]}, {"chapter": "פרק ו׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/xdIU6HLpuHM"}, {"title": "שיעור ב׳", "link": "https://youtu.be/QaujjHE0F6w"}]}, {"chapter": "פרק ז׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/0IZq2bfSTL8"}, {"title": "שיעור ב׳", "link": "https://youtu.be/4FoJd-mYWkc"}, {"title": "שיעור ג׳", "link": "https://youtu.be/XTrNpf18O6U"}, {"title": "שיעור ד׳", "link": "https://youtu.be/ZgeJqUyDy0k"}]}, {"chapter": "פרק ח׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/lkOW1TSe9pM"}, {"title": "שיעור ב׳", "link": "https://youtu.be/sfX9W8b3SW8"}]}, {"chapter": "פרק ט׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/5km42orOzCM"}, {"title": "שיעור ב׳", "link": "https://youtu.be/yq6-YktxBhs"}, {"title": "שיעור ג׳", "link": "https://youtu.be/Is82V1jLNcg"}, {"title": "שיעור ד׳", "link": "https://youtu.be/XWivk3aVwdk"}, {"title": "שיעור ה׳", "link": "https://youtu.be/sn4723CURSk"}]}, {"chapter": "פרק י׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/mQ41uCNiTNE"}, {"title": "שיעור ב׳", "link": "https://youtu.be/TiexaJ_5dtA"}, {"title": "שיעור ג׳", "link": "https://youtu.be/nzw8HxVhRg8"}, {"title": "שיעור ד׳", "link": "https://youtu.be/_pz7qYTzySY"}, {"title": "שיעור ה׳", "link": "https://youtu.be/cMMzu8pzHUY"}, {"title": "שיעור ז׳", "link": "https://youtu.be/tFz0Tu4GAzg"}]}, {"chapter": "פרק י\"א", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/MgVgVgbtcKw"}, {"title": "שיעור ב׳", "link": "https://youtu.be/CY3P1E2BwKE"}]}, {"chapter": "פרק י\"ב", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/injOAIF9c7o"}, {"title": "שיעור ב׳", "link": "https://youtu.be/QNcz30ffNX0"}]}, {"chapter": "פרק י\"ד", "topic": "מה עושים תכלס?", "items": [{"title": "מה עושים תכלס?", "link": "https://youtu.be/qklb16M-L9I"}, {"title": "מותר להרגיש", "link": "https://youtu.be/JzG6BxY-oT4"}]}, {"chapter": "פרק ט\"ו", "topic": "עבודה עצמית מהי?", "items": [{"title": "עבודה עצמית מהי?", "link": "https://youtu.be/BGws-sjJTbM"}, {"title": "לשנות את הטבע וההרגלים", "link": "https://youtu.be/filE1OdHens"}]}, {"chapter": "פרק י\"ז", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/vx0GRO9uOZ4"}, {"title": "שיעור ב׳", "link": "https://youtu.be/7qvdb_0Lqvo"}]}, {"chapter": "פרק י\"ח", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/xhfsbLShBzE"}, {"title": "שיעור ב׳", "link": "https://youtu.be/USQY-7HuNrs"}, {"title": "שיעור ג׳", "link": "https://youtu.be/u9nXkxVBKfU"}]}, {"chapter": "פרק י\"ט", "topic": null, "items": [{"title": "שיעור ב׳", "link": "https://youtu.be/V0VB1457LPU"}]}, {"chapter": "פרק כ׳", "topic": "מהו העולם הזה בעצם?", "items": [{"title": "שיעור א׳", "link": "https://youtu.be/VUd8BjZHNH8"}, {"title": "מהו העולם הזה בעצם?", "link": "https://youtu.be/TI0_Ksqin0I"}]}, {"chapter": "פרק כ\"ב", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/gWMU1t87Eq8"}, {"title": "שיעור ב׳", "link": "https://youtu.be/hunSA1mBXMw"}]}, {"chapter": "פרק כ\"ג", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/2l783sXThcE"}, {"title": "שיעור ב׳", "link": "https://youtu.be/0k51WNfFADQ"}, {"title": "שיעור ג׳", "link": "https://youtu.be/vVYoymKraI8"}]}, {"chapter": "פרק כ\"ד", "topic": "מה לומדים מהיתוש?", "items": [{"title": "שיעור א׳", "link": "https://youtu.be/mmyMa7UOz-c"}, {"title": "שיעור ב׳", "link": "https://youtu.be/rTfyVF234Rg"}, {"title": "שיעור ג׳", "link": "https://youtu.be/YBYK1bcUN5o"}, {"title": "מה לומדים מהיתוש?", "link": "https://youtu.be/aQUD6tdVXXw"}]}, {"chapter": "פרק כ\"ה", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/M7CXDATW1tI"}]}, {"chapter": "פרק כ\"ו", "topic": "למה חשוב להיות בשמחה!", "items": [{"title": "למה חשוב להיות בשמחה!", "link": "https://youtu.be/bKv7ERKrsj0"}, {"title": "מה מפריע לנו להיות בשמחה?", "link": "https://youtu.be/QBor6UY5W9I"}, {"title": "מה המטרה של החריף בחיינו?", "link": "https://youtu.be/QXK_03zuorA"}]}, {"chapter": "פרק כ\"ז", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/Pm-ySdBxdu8"}]}, {"chapter": "פרק כ\"ט", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/NePUf9e8hG4"}]}, {"chapter": "פרק ל'", "topic": "לבדוק את עצמי יותר", "items": [{"title": "לבדוק את עצמי יותר", "link": "https://youtu.be/xlDBK1i1fDU"}]}, {"chapter": "פרק ל\"א", "topic": "להתבונן ולשמוח", "items": [{"title": "להתבונן, להעמיק – כדי לשמוח", "link": "https://youtu.be/HOzkRRQPEYs"}, {"title": "מהרגש השלילי צומחת פעולה חיובית", "link": "https://youtu.be/S89UWnIDnPY"}, {"title": "הטוב שיש בי יוצא אל העולם", "link": "https://youtu.be/jynUYgeaJw4"}]}, {"chapter": "פרק ל\"ב", "topic": "אהבה לזולת", "items": [{"title": "איך מתחילים להרגיש אהבה לזולת", "link": "https://youtu.be/lP5rWVx1HBk"}, {"title": "האם אפשר לאהוב כל אחד?", "link": "https://youtu.be/kDUZm5fqhQY"}, {"title": "שלושת הפרמטרים לפני שמרגישים שלא אוהבים", "link": "https://youtu.be/plx8lbdBTYI"}]}, {"chapter": "פרק ל\"ג", "topic": "איך לא להרגיש בדידות", "items": [{"title": "איך לא להרגיש בדידות", "link": "https://youtu.be/2PMNiPAUZKg"}, {"title": "הטוב שבי מול המציאות בעולם", "link": "https://youtu.be/23uzXKZrHzw"}]}, {"chapter": "פרק ל\"ד", "topic": "לארח את השכינה בתוכי", "items": [{"title": "לארח את השכינה בתוכי", "link": "https://youtu.be/QIxqtJV11Rc"}]}, {"chapter": "פרק ל\"ה", "topic": "המעשה הוא העיקר", "items": [{"title": "שיעור א׳", "link": "https://youtu.be/dR3Uf6yBhxA"}, {"title": "שיעור ב׳", "link": "https://youtu.be/e5UYoF89JBQ"}, {"title": "לחבר בין היום יום לשליחות שלנו", "link": "https://youtu.be/IbVH8FFlJvM"}, {"title": "כשאני בעשייה, מה קורה עמוק אצלי בפנים", "link": "https://youtu.be/J6gI8xvJ_Sk"}, {"title": "המעשה הוא העיקר", "link": "https://youtu.be/mjhYKkmMTYQ"}]}, {"chapter": "פרק ל\"ו", "topic": "מה התכלית של העולם הזה?", "items": [{"title": "מה התכלית של העולם הזה?", "link": "https://youtu.be/4DbBy7BhcgA"}]}, {"chapter": "פרק ל\"ז", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/hkWNpdJTZvs"}, {"title": "שיעור ב׳", "link": "https://youtu.be/YvYix0Ho0Bo"}, {"title": "שיעור ג׳", "link": "https://youtu.be/0JX-FcjEbkU"}]}, {"chapter": "פרק ל\"ח", "topic": "להרגיש, לחוות – להתכוון", "items": [{"title": "שיעור ד׳", "link": "https://youtu.be/Wqknl7CBOg4"}, {"title": "שיעור ה׳", "link": "https://youtu.be/qWtK6Q7S8gA"}, {"title": "להרגיש, לחוות – להתכוון", "link": "https://youtu.be/0PvrpFEhrUI"}]}, {"chapter": "פרק ל\"ט", "topic": "עולם הרגשות שלנו", "items": [{"title": "עולם הרגשות שלנו", "link": "https://youtu.be/Je-5xrzL_eQ"}, {"title": "לעשות מה שטבעי לי? או לבחור?", "link": "https://youtu.be/oK4Ntf-prF0"}, {"title": "איזה כנפיים את מוסיפה למעשים שלך?", "link": "https://youtu.be/G8mpmY0DQj8"}]}, {"chapter": "פרק מ׳", "topic": null, "items": [{"title": "שיעור א׳", "link": "https://youtu.be/o0H3N90lUEA"}, {"title": "שיעור ב׳", "link": "https://youtu.be/o0H3N90lUEA"}]}, {"chapter": "פרק מ\"א", "topic": "בשבילי נברא העולם", "items": [{"title": "להכניס ענווה בעשייה שלנו", "link": "https://youtu.be/YovcxViYHfM"}, {"title": "בשבילי נברא העולם", "link": "https://youtu.be/JJz5MsDqQrI"}, {"title": "בשבילי נברא העולם", "link": "https://youtu.be/rZJbZWJVWxY"}, {"title": "לשלב קבלת עול ואהבה בעשייה היומיומית", "link": "https://youtu.be/Vm8Tq4cYs9Q"}]}, {"chapter": "נושא כללי", "topic": "בשבילי נברא העולם", "items": [{"title": "בשבילי נברא העולם", "link": "https://youtu.be/PTfQjlZKCYQ"}]}];
+/*VIDEOS_END*/
+
+// flatten for AI + search
+let FLAT = [];
+function rebuildFlat(){
+  FLAT = [];
+  VIDEOS.forEach(ch => {
+    ch.items.forEach(it => {
+      FLAT.push({chapter: ch.chapter, topic: ch.topic, title: it.title, link: it.link});
+    });
+  });
+}
+rebuildFlat();
+
+function ytId(url){
+  const m = url.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{6,})/);
+  return m ? m[1] : '';
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- library render ---------- */
+const accordionEl = document.getElementById('accordion');
+
+function renderLibrary(filter){
+  const f = (filter||'').trim().toLowerCase();
+  accordionEl.innerHTML = '';
+  let shown = 0;
+  VIDEOS.forEach((ch, ci) => {
+    const chapterMatches = ch.chapter.toLowerCase().includes(f) || (ch.topic||'').toLowerCase().includes(f);
+    const matchingItems = ch.items.filter(it =>
+      f === '' || chapterMatches || (it.title||'').toLowerCase().includes(f)
+    );
+    if(matchingItems.length === 0) return;
+    shown += matchingItems.length;
+
+    const div = document.createElement('div');
+    div.className = 'chapter';
+    div.innerHTML = `
+      <div class="chapter-head">
+        <div class="chapter-head-text">
+          <span class="chapter-name">${ch.chapter}</span>
+          ${ch.topic ? `<span class="chapter-topic">${ch.topic}</span>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;">
+          <span class="chapter-count">${matchingItems.length} שיעורים</span>
+          <span class="chevron"></span>
+        </div>
+      </div>
+      <div class="lesson-list">
+        ${matchingItems.map((it,i)=>`
+          <a class="lesson" href="${it.link}" target="_blank" rel="noopener">
+            <span class="lesson-title">${it.title || 'שיעור ' + (i+1)}</span>
+            <span class="play-dot"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          </a>
+        `).join('')}
+      </div>
+    `;
+    div.querySelector('.chapter-head').addEventListener('click', ()=>{
+      div.classList.toggle('open');
+    });
+    if(f !== '') div.classList.add('open');
+    accordionEl.appendChild(div);
+  });
+  document.getElementById('no-results').style.display = shown === 0 ? 'block' : 'none';
+}
+renderLibrary('');
+document.getElementById('lib-search').addEventListener('input', e => renderLibrary(e.target.value));
+
+/* ---------- AI matching ---------- */
+const askBtn = document.getElementById('ask-btn');
+const feelingInput = document.getElementById('feeling-input');
+const loadingEl = document.getElementById('loading');
+const errorBox = document.getElementById('error-box');
+const resultEl = document.getElementById('result');
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    feelingInput.value = chip.dataset.ex;
+    feelingInput.focus();
+  });
+});
+
+let lastMatches = [];
+let matchIndex = 0;
+
+async function findLesson(userText, avoidLinks){
+  const library = FLAT.map((v,i)=>`${i}. פרק: ${v.chapter}${v.topic ? ' | נושא: '+v.topic : ''} | כותרת: ${v.title}`).join('\n');
+
+  const system = `את עוזרת חמה ואמפתית שמלווה נשים בעולם של "בואי לתניא" - שיעורי תניא של שרי גרצמן שמחברים בין עבודה רגשית פנימית לחוכמת התניא.
+תפקידך: לקרוא את מה שהאישה כותבת (מצב רגשי, שאלה, התמודדות), ולבחור מתוך רשימת השיעורים למטה את השיעור שהכי רלוונטי עבורה כרגע.
+
+רשימת השיעורים (מספר. פרק | נושא | כותרת):
+${library}
+
+השיבי אך ורק בפורמט JSON תקין, ללא טקסט נוסף, בצורה הזו:
+{"index": <המספר של השיעור הנבחר מהרשימה>, "reason": "<1-2 משפטים חמים בעברית שמסבירים למה השיעור הזה מתאים לה, בגובה העיניים, בלי לאבחן או לתת ייעוץ פסיכולוגי>"}
+
+הנחיות חשובות:
+- אם הטקסט של האישה מרמז על מצוקה קשה, מחשבות פגיעה עצמית, או משבר נפשי - עדיין בחרי שיעור מתאים אך הוסיפי בתחילת ה-reason משפט עדין שמעודד אותה לפנות גם לתמיכה אנושית (חברה, איש מקצוע, או קו סיוע), בלשון תומכת ולא מבהילה.
+- אל תמציאי שיעורים שלא ברשימה. תמיד תחזירי index תקין מהרשימה.
+- אל תיתני אבחנות פסיכולוגיות או רפואיות.
+${avoidLinks && avoidLinks.length ? 'הימנעי מהאינדקסים הבאים כי כבר הוצגו: ' + avoidLinks.join(', ') : ''}`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 400,
+      system: system,
+      messages: [{ role: "user", content: userText }]
+    })
+  });
+
+  if(!response.ok) throw new Error('api_error');
+  const data = await response.json();
+  const textBlock = data.content.find(b => b.type === 'text');
+  if(!textBlock) throw new Error('no_text');
+  const clean = textBlock.text.replace(/```json|```/g,'').trim();
+  const parsed = JSON.parse(clean);
+  if(typeof parsed.index !== 'number' || !FLAT[parsed.index]) throw new Error('bad_index');
+  return parsed;
+}
+
+function showResult(video, reason){
+  document.getElementById('res-title').textContent = video.title || video.chapter;
+  document.getElementById('res-chapter').textContent = video.topic ? `${video.chapter} · ${video.topic}` : video.chapter;
+  document.getElementById('res-reason').textContent = reason;
+  document.getElementById('res-iframe').src = `https://www.youtube.com/embed/${ytId(video.link)}`;
+  document.getElementById('res-open').href = video.link;
+  resultEl.classList.add('show');
+  resultEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+async function runSearch(){
+  const text = feelingInput.value.trim();
+  if(!text) { feelingInput.focus(); return; }
+  errorBox.classList.remove('show');
+  resultEl.classList.remove('show');
+  loadingEl.classList.add('show');
+  askBtn.disabled = true;
+  try{
+    const parsed = await findLesson(text, []);
+    lastMatches = [parsed.index];
+    matchIndex = 0;
+    showResult(FLAT[parsed.index], parsed.reason);
+  }catch(err){
+    errorBox.textContent = 'לא הצלחנו למצוא שיעור כרגע. אפשר לנסות שוב, או לעיין ישירות בספריית השיעורים.';
+    errorBox.classList.add('show');
+  }finally{
+    loadingEl.classList.remove('show');
+    askBtn.disabled = false;
+  }
+}
+
+askBtn.addEventListener('click', runSearch);
+feelingInput.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)) runSearch();
+});
+
+document.getElementById('res-another').addEventListener('click', async ()=>{
+  const text = feelingInput.value.trim();
+  if(!text) return;
+  loadingEl.classList.add('show');
+  errorBox.classList.remove('show');
+  try{
+    const parsed = await findLesson(text, lastMatches);
+    lastMatches.push(parsed.index);
+    showResult(FLAT[parsed.index], parsed.reason);
+  }catch(err){
+    errorBox.textContent = 'לא הצלחנו למצוא שיעור נוסף כרגע. נסי שוב בעוד רגע.';
+    errorBox.classList.add('show');
+  }finally{
+    loadingEl.classList.remove('show');
+  }
+});
+
+/* ---------- topics panel ---------- */
+const topicGridEl = document.getElementById('topic-grid');
+const GENERIC_TITLE = /^שיעור\s/;
+
+function buildTopicList(){
+  const topics = [];
+  const seen = new Set();
+  VIDEOS.forEach(ch => {
+    if(ch.topic){
+      const match = ch.items.find(it => it.title === ch.topic) || ch.items[0];
+      const key = ch.topic + '|' + match.link;
+      if(!seen.has(key)){
+        seen.add(key);
+        topics.push({label: ch.topic, chapter: ch.chapter, chTopic: ch.topic, title: match.title, link: match.link});
+      }
+    }
+    ch.items.forEach(it => {
+      if(it.title && !GENERIC_TITLE.test(it.title) && it.title !== ch.topic){
+        const key = it.title + '|' + it.link;
+        if(!seen.has(key)){
+          seen.add(key);
+          topics.push({label: it.title, chapter: ch.chapter, chTopic: ch.topic, title: it.title, link: it.link});
+        }
+      }
+    });
+  });
+  return topics;
+}
+
+function renderTopics(){
+  const topics = buildTopicList();
+  topicGridEl.innerHTML = '';
+  topics.forEach(t => {
+    const pill = document.createElement('div');
+    pill.className = 'topic-pill';
+    pill.textContent = t.label;
+    pill.addEventListener('click', ()=>{
+      document.getElementById('topic-title').textContent = t.title;
+      document.getElementById('topic-chapter').textContent = t.chTopic && t.chTopic !== t.title ? `${t.chapter} · ${t.chTopic}` : t.chapter;
+      document.getElementById('topic-iframe').src = `https://www.youtube.com/embed/${ytId(t.link)}`;
+      document.getElementById('topic-open').href = t.link;
+      const resEl = document.getElementById('topic-result');
+      resEl.classList.add('show');
+      resEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+    topicGridEl.appendChild(pill);
+  });
+}
+renderTopics();
+
+/* ---------- admin panel ---------- */
+const ADMIN_PASSWORD = "בואילתניא2026"; // אפשר לשנות סיסמה כאן
+
+let heartClicks = 0, heartTimer = null;
+document.getElementById('admin-trigger').addEventListener('click', ()=>{
+  heartClicks++;
+  clearTimeout(heartTimer);
+  heartTimer = setTimeout(()=>{ heartClicks = 0; }, 2500);
+  if(heartClicks >= 5){
+    heartClicks = 0;
+    document.getElementById('admin-overlay').classList.add('show');
+    document.getElementById('admin-login').style.display = 'block';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('admin-login-error').classList.remove('show');
+  }
+});
+
+function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('show'); }
+document.getElementById('admin-close-1').addEventListener('click', closeAdmin);
+document.getElementById('admin-close-2').addEventListener('click', closeAdmin);
+document.getElementById('admin-overlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'admin-overlay') closeAdmin();
+});
+
+function populateChapterList(){
+  const dl = document.getElementById('chapter-list');
+  dl.innerHTML = VIDEOS.map(ch => `<option value="${ch.chapter}">`).join('');
+}
+
+document.getElementById('admin-login-btn').addEventListener('click', ()=>{
+  const pw = document.getElementById('admin-password').value;
+  if(pw === ADMIN_PASSWORD){
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    populateChapterList();
+  }else{
+    document.getElementById('admin-login-error').classList.add('show');
+  }
+});
+
+document.getElementById('admin-add-btn').addEventListener('click', ()=>{
+  const chapter = document.getElementById('admin-chapter').value.trim();
+  const topic = document.getElementById('admin-topic').value.trim();
+  const title = document.getElementById('admin-title').value.trim();
+  const link = document.getElementById('admin-link').value.trim();
+  const errEl = document.getElementById('admin-add-error');
+  errEl.classList.remove('show');
+
+  if(!chapter || !title || !link){
+    errEl.textContent = 'צריך למלא לפחות פרק, כותרת וקישור.';
+    errEl.classList.add('show');
+    return;
+  }
+  if(!ytId(link)){
+    errEl.textContent = 'הקישור לא נראה כמו קישור יוטיוב תקין.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  let ch = VIDEOS.find(c => c.chapter === chapter);
+  if(!ch){
+    ch = {chapter: chapter, topic: topic || null, items: []};
+    VIDEOS.push(ch);
+  }else if(topic && !ch.topic){
+    ch.topic = topic;
+  }
+  ch.items.push({title: title, link: link});
+
+  rebuildFlat();
+  renderLibrary(document.getElementById('lib-search').value);
+  renderTopics();
+  populateChapterList();
+
+  document.getElementById('admin-chapter').value = '';
+  document.getElementById('admin-topic').value = '';
+  document.getElementById('admin-title').value = '';
+  document.getElementById('admin-link').value = '';
+  document.getElementById('admin-success').classList.add('show');
+  setTimeout(()=> document.getElementById('admin-success').classList.remove('show'), 3500);
+});
+
+document.getElementById('admin-export-btn').addEventListener('click', ()=>{
+  // reset transient UI state before capturing the page so the exported file opens clean
+  document.querySelectorAll('.chapter.open').forEach(c => c.classList.remove('open'));
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('topic-result').classList.remove('show');
+  closeAdmin();
+
+  const newVideosCode = 'let VIDEOS = ' + JSON.stringify(VIDEOS) + ';';
+  let html = '<!doctype html>\n' + document.documentElement.outerHTML;
+  html = html.replace(/\/\*VIDEOS_START\*\/[\s\S]*?\/\*VIDEOS_END\*\//, '/*VIDEOS_START*/\n' + newVideosCode + '\n/*VIDEOS_END*/');
+
+  const blob = new Blob([html], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'boi-letanya-app-updated.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+</script>
+</body>
+</html>
