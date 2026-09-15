@@ -14,6 +14,7 @@
 <link rel="manifest" id="pwa-manifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Frank+Ruhl+Libre:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --wine:#5a132c;
@@ -235,6 +236,12 @@
     margin-bottom:10px;font-family:'Assistant',sans-serif;font-size:1rem;outline:none;
   }
   .admin-box input:focus{border-color:var(--rose);}
+  .admin-box textarea{
+    width:100%;padding:12px 14px;border:1.5px solid var(--gold-soft);border-radius:12px;
+    margin-bottom:10px;font-family:'Assistant',sans-serif;font-size:1rem;outline:none;
+    resize:vertical;min-height:70px;
+  }
+  .admin-box textarea:focus{border-color:var(--rose);}
   .admin-box button.primary{width:100%;margin-bottom:10px;}
   .admin-close{display:block;text-align:center;margin:6px auto 0;width:fit-content;}
   .admin-divider{border:none;border-top:1px solid var(--gold-soft);margin:18px 0;}
@@ -278,14 +285,24 @@
     </div>
 
     <div class="result" id="result">
-      <div class="kicker">השיעור שמתאים לך עכשיו</div>
-      <h3 id="res-title"></h3>
-      <div class="chapter-tag" id="res-chapter"></div>
-      <p class="reason" id="res-reason"></p>
-      <div class="video-frame"><iframe id="res-iframe" src="" allowfullscreen></iframe></div>
-      <div class="result-actions">
-        <a class="link-btn" id="res-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
-        <span class="link-btn" id="res-another" style="cursor:pointer;">שיעור נוסף בנושא הזה</span>
+      <div id="result-short-stage">
+        <div class="kicker">קודם, משהו קצר בשבילך</div>
+        <h3 id="short-title"></h3>
+        <div class="video-frame"><iframe id="short-iframe" src="" allowfullscreen></iframe></div>
+        <div class="result-actions">
+          <button class="primary" id="short-continue-btn" style="width:auto;">להמשך לשיעור המלא</button>
+        </div>
+      </div>
+      <div id="result-full-stage">
+        <div class="kicker">השיעור שמתאים לך עכשיו</div>
+        <h3 id="res-title"></h3>
+        <div class="chapter-tag" id="res-chapter"></div>
+        <p class="reason" id="res-reason"></p>
+        <div class="video-frame"><iframe id="res-iframe" src="" allowfullscreen></iframe></div>
+        <div class="result-actions">
+          <a class="link-btn" id="res-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
+          <span class="link-btn" id="res-another" style="cursor:pointer;">שיעור נוסף בנושא הזה</span>
+        </div>
       </div>
     </div>
   </section>
@@ -294,12 +311,22 @@
     <p class="sub" style="text-align:center;margin:0 0 18px;color:var(--ink-soft);">בחרי נושא שקרוב אלייך עכשיו:</p>
     <div class="topic-grid" id="topic-grid"></div>
     <div class="result" id="topic-result">
-      <div class="kicker" id="topic-kicker">השיעור</div>
-      <h3 id="topic-title"></h3>
-      <div class="chapter-tag" id="topic-chapter"></div>
-      <div class="video-frame"><iframe id="topic-iframe" src="" allowfullscreen></iframe></div>
-      <div class="result-actions">
-        <a class="link-btn" id="topic-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
+      <div id="topic-short-stage">
+        <div class="kicker">קודם, משהו קצר בשבילך</div>
+        <h3 id="topic-short-title"></h3>
+        <div class="video-frame"><iframe id="topic-short-iframe" src="" allowfullscreen></iframe></div>
+        <div class="result-actions">
+          <button class="primary" id="topic-short-continue-btn" style="width:auto;">להמשך לשיעור המלא</button>
+        </div>
+      </div>
+      <div id="topic-full-stage">
+        <div class="kicker" id="topic-kicker">השיעור</div>
+        <h3 id="topic-title"></h3>
+        <div class="chapter-tag" id="topic-chapter"></div>
+        <div class="video-frame"><iframe id="topic-iframe" src="" allowfullscreen></iframe></div>
+        <div class="result-actions">
+          <a class="link-btn" id="topic-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
+        </div>
       </div>
     </div>
   </section>
@@ -329,7 +356,9 @@
       <datalist id="chapter-list"></datalist>
       <input id="admin-topic" placeholder="נושא הפרק (לא חובה, רק אם רוצים תגית נושא)">
       <input id="admin-title" placeholder="כותרת השיעור">
+      <textarea id="admin-summary" placeholder="תקציר קצר של השיעור (לא חובה, אבל עוזר מאוד ל-AI להתאים אותו נכון בחיפוש החכם)"></textarea>
       <input id="admin-link" placeholder="קישור youtube.com/... או youtu.be/...">
+      <input id="admin-short" placeholder="קישור לסרטון קצר על אותו נושא (לא חובה - יוצג קודם, עם אפשרות להמשיך לשיעור המלא)">
       <button class="primary" id="admin-add-btn">הוספת שיעור</button>
       <div class="error-box" id="admin-add-error"></div>
       <div class="admin-success" id="admin-success">השיעור נוסף! (זמנית, עד שתייצאי קובץ מעודכן)</div>
@@ -363,7 +392,7 @@
 })();
 
 /*VIDEOS_START*/
-let VIDEOS = [{"chapter":"הקדמת ספר התניא","topic":null,"items":[{"title":"חלק א׳","link":"https://youtu.be/rqwebjjey6s"}]},{"chapter":"פרק א׳","topic":null,"items":[{"title":"שיעור ב׳","link":"https://youtu.be/LbPHbpucsW0"},{"title":"שיעור ג׳","link":"https://youtu.be/F7GBngoHZtc"}]},{"chapter":"פרק ב׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/swDqR6fYE3w"},{"title":"שיעור ב׳","link":"https://youtu.be/KR2Ko4FurZ4"},{"title":"שיעור ג׳","link":"https://youtu.be/yxgL_d9ismQ"}]},{"chapter":"פרק ד׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/O_StlMIgBzA"},{"title":"שיעור ב׳","link":"https://youtu.be/gvT6QS7Eda0"},{"title":"שיעור ג׳","link":"https://youtu.be/7GtmILF5gMw"},{"title":"שיעור ד׳","link":"https://youtu.be/PRtZbgFRoXQ"},{"title":"שיעור ה׳","link":"https://youtu.be/CBOLsjSEtiE"}]},{"chapter":"פרק ה׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/vmilwV5TDtg"},{"title":"שיעור ב׳","link":"https://youtu.be/8TdCJCkDVVk"}]},{"chapter":"פרק ו׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/xdIU6HLpuHM"},{"title":"שיעור ב׳","link":"https://youtu.be/QaujjHE0F6w"}]},{"chapter":"פרק ז׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/0IZq2bfSTL8"},{"title":"שיעור ב׳","link":"https://youtu.be/4FoJd-mYWkc"},{"title":"שיעור ג׳","link":"https://youtu.be/XTrNpf18O6U"},{"title":"שיעור ד׳","link":"https://youtu.be/ZgeJqUyDy0k"}]},{"chapter":"פרק ח׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/lkOW1TSe9pM"},{"title":"שיעור ב׳","link":"https://youtu.be/sfX9W8b3SW8"}]},{"chapter":"פרק ט׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/5km42orOzCM"},{"title":"שיעור ב׳","link":"https://youtu.be/yq6-YktxBhs"},{"title":"שיעור ג׳","link":"https://youtu.be/Is82V1jLNcg"},{"title":"שיעור ד׳","link":"https://youtu.be/XWivk3aVwdk"},{"title":"שיעור ה׳","link":"https://youtu.be/sn4723CURSk"}]},{"chapter":"פרק י׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/mQ41uCNiTNE"},{"title":"שיעור ב׳","link":"https://youtu.be/TiexaJ_5dtA"},{"title":"שיעור ג׳","link":"https://youtu.be/nzw8HxVhRg8"},{"title":"שיעור ד׳","link":"https://youtu.be/_pz7qYTzySY"},{"title":"שיעור ה׳","link":"https://youtu.be/cMMzu8pzHUY"},{"title":"שיעור ז׳","link":"https://youtu.be/tFz0Tu4GAzg"}]},{"chapter":"פרק י\"א","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/MgVgVgbtcKw"},{"title":"שיעור ב׳","link":"https://youtu.be/CY3P1E2BwKE"}]},{"chapter":"פרק י\"ב","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/injOAIF9c7o"},{"title":"שיעור ב׳","link":"https://youtu.be/QNcz30ffNX0"}]},{"chapter":"פרק י\"ד","topic":"מה עושים תכלס?","items":[{"title":"מה עושים תכלס?","link":"https://youtu.be/qklb16M-L9I"},{"title":"מותר להרגיש","link":"https://youtu.be/JzG6BxY-oT4"}]},{"chapter":"פרק ט\"ו","topic":"עבודה עצמית מהי?","items":[{"title":"עבודה עצמית מהי?","link":"https://youtu.be/BGws-sjJTbM"},{"title":"לשנות את הטבע וההרגלים","link":"https://youtu.be/filE1OdHens"}]},{"chapter":"פרק י\"ז","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/vx0GRO9uOZ4"},{"title":"שיעור ב׳","link":"https://youtu.be/7qvdb_0Lqvo"}]},{"chapter":"פרק י\"ח","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/xhfsbLShBzE"},{"title":"שיעור ב׳","link":"https://youtu.be/USQY-7HuNrs"},{"title":"שיעור ג׳","link":"https://youtu.be/u9nXkxVBKfU"}]},{"chapter":"פרק י\"ט","topic":null,"items":[{"title":"שיעור ב׳","link":"https://youtu.be/V0VB1457LPU"}]},{"chapter":"פרק כ׳","topic":"מהו העולם הזה בעצם?","items":[{"title":"שיעור א׳","link":"https://youtu.be/VUd8BjZHNH8"},{"title":"מהו העולם הזה בעצם?","link":"https://youtu.be/TI0_Ksqin0I"}]},{"chapter":"פרק כ\"ב","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/gWMU1t87Eq8"},{"title":"שיעור ב׳","link":"https://youtu.be/hunSA1mBXMw"}]},{"chapter":"פרק כ\"ג","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/2l783sXThcE"},{"title":"שיעור ב׳","link":"https://youtu.be/0k51WNfFADQ"},{"title":"שיעור ג׳","link":"https://youtu.be/vVYoymKraI8"}]},{"chapter":"פרק כ\"ד","topic":"מה לומדים מהיתוש?","items":[{"title":"שיעור א׳","link":"https://youtu.be/mmyMa7UOz-c"},{"title":"שיעור ב׳","link":"https://youtu.be/rTfyVF234Rg"},{"title":"שיעור ג׳","link":"https://youtu.be/YBYK1bcUN5o"},{"title":"מה לומדים מהיתוש?","link":"https://youtu.be/aQUD6tdVXXw"}]},{"chapter":"פרק כ\"ה","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/M7CXDATW1tI"}]},{"chapter":"פרק כ\"ו","topic":"למה חשוב להיות בשמחה!","items":[{"title":"למה חשוב להיות בשמחה!","link":"https://youtu.be/bKv7ERKrsj0"},{"title":"מה מפריע לנו להיות בשמחה?","link":"https://youtu.be/QBor6UY5W9I"},{"title":"מה המטרה של החריף בחיינו?","link":"https://youtu.be/QXK_03zuorA"}]},{"chapter":"פרק כ\"ז","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/Pm-ySdBxdu8"}]},{"chapter":"פרק כ\"ט","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/NePUf9e8hG4"}]},{"chapter":"פרק ל'","topic":"לבדוק את עצמי יותר","items":[{"title":"לבדוק את עצמי יותר","link":"https://youtu.be/xlDBK1i1fDU"}]},{"chapter":"פרק ל\"א","topic":"להתבונן ולשמוח","items":[{"title":"להתבונן, להעמיק – כדי לשמוח","link":"https://youtu.be/HOzkRRQPEYs"},{"title":"מהרגש השלילי צומחת פעולה חיובית","link":"https://youtu.be/S89UWnIDnPY"},{"title":"הטוב שיש בי יוצא אל העולם","link":"https://youtu.be/jynUYgeaJw4"}]},{"chapter":"פרק ל\"ב","topic":"אהבה לזולת","items":[{"title":"איך מתחילים להרגיש אהבה לזולת","link":"https://youtu.be/lP5rWVx1HBk"},{"title":"האם אפשר לאהוב כל אחד?","link":"https://youtu.be/kDUZm5fqhQY"},{"title":"שלושת הפרמטרים לפני שמרגישים שלא אוהבים","link":"https://youtu.be/plx8lbdBTYI"}]},{"chapter":"פרק ל\"ג","topic":"איך לא להרגיש בדידות","items":[{"title":"איך לא להרגיש בדידות","link":"https://youtu.be/2PMNiPAUZKg"},{"title":"הטוב שבי מול המציאות בעולם","link":"https://youtu.be/23uzXKZrHzw"}]},{"chapter":"פרק ל\"ד","topic":"לארח את השכינה בתוכי","items":[{"title":"לארח את השכינה בתוכי","link":"https://youtu.be/QIxqtJV11Rc"}]},{"chapter":"פרק ל\"ה","topic":"המעשה הוא העיקר","items":[{"title":"שיעור א׳","link":"https://youtu.be/dR3Uf6yBhxA"},{"title":"שיעור ב׳","link":"https://youtu.be/e5UYoF89JBQ"},{"title":"לחבר בין היום יום לשליחות שלנו","link":"https://youtu.be/IbVH8FFlJvM"},{"title":"כשאני בעשייה, מה קורה עמוק אצלי בפנים","link":"https://youtu.be/J6gI8xvJ_Sk"},{"title":"המעשה הוא העיקר","link":"https://youtu.be/mjhYKkmMTYQ"}]},{"chapter":"פרק ל\"ו","topic":"מה התכלית של העולם הזה?","items":[{"title":"מה התכלית של העולם הזה?","link":"https://youtu.be/4DbBy7BhcgA"}]},{"chapter":"פרק ל\"ז","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/hkWNpdJTZvs"},{"title":"שיעור ב׳","link":"https://youtu.be/YvYix0Ho0Bo"},{"title":"שיעור ג׳","link":"https://youtu.be/0JX-FcjEbkU"}]},{"chapter":"פרק ל\"ח","topic":"להרגיש, לחוות – להתכוון","items":[{"title":"שיעור ד׳","link":"https://youtu.be/Wqknl7CBOg4"},{"title":"שיעור ה׳","link":"https://youtu.be/qWtK6Q7S8gA"},{"title":"להרגיש, לחוות – להתכוון","link":"https://youtu.be/0PvrpFEhrUI"}]},{"chapter":"פרק ל\"ט","topic":"עולם הרגשות שלנו","items":[{"title":"עולם הרגשות שלנו","link":"https://youtu.be/Je-5xrzL_eQ"},{"title":"לעשות מה שטבעי לי? או לבחור?","link":"https://youtu.be/oK4Ntf-prF0"},{"title":"איזה כנפיים את מוסיפה למעשים שלך?","link":"https://youtu.be/G8mpmY0DQj8"}]},{"chapter":"פרק מ׳","topic":null,"items":[{"title":"שיעור א׳","link":"https://youtu.be/o0H3N90lUEA"},{"title":"שיעור ב׳","link":"https://youtu.be/o0H3N90lUEA"}]},{"chapter":"פרק מ\"א","topic":"בשבילי נברא העולם","items":[{"title":"להכניס ענווה בעשייה שלנו","link":"https://youtu.be/YovcxViYHfM"},{"title":"בשבילי נברא העולם","link":"https://youtu.be/JJz5MsDqQrI"},{"title":"בשבילי נברא העולם","link":"https://youtu.be/rZJbZWJVWxY"},{"title":"לשלב קבלת עול ואהבה בעשייה היומיומית","link":"https://youtu.be/Vm8Tq4cYs9Q"}]},{"chapter":"נושא כללי","topic":"בשבילי נברא העולם","items":[{"title":"בשבילי נברא העולם","link":"https://youtu.be/PTfQjlZKCYQ"},{"title":"איך מגיעים לשמחה אמיתית! - להכיר את הכוחות שלי - להתחבר לה'","link":"https://youtu.be/m5Nen2KXMxw?si=ASFUv99r8OvAAiV"}]}];
+let VIDEOS = [];
 /*VIDEOS_END*/
 
 // flatten for AI + search
@@ -372,11 +401,10 @@ function rebuildFlat(){
   FLAT = [];
   VIDEOS.forEach(ch => {
     ch.items.forEach(it => {
-      FLAT.push({chapter: ch.chapter, topic: ch.topic, title: it.title, link: it.link});
+      FLAT.push({chapter: ch.chapter, topic: ch.topic, title: it.title, link: it.link, summary: it.summary || null, short: it.short || null});
     });
   });
 }
-rebuildFlat();
 
 function ytId(url){
   const m = url.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{6,})/);
@@ -438,7 +466,6 @@ function renderLibrary(filter){
   });
   document.getElementById('no-results').style.display = shown === 0 ? 'block' : 'none';
 }
-renderLibrary('');
 document.getElementById('lib-search').addEventListener('input', e => renderLibrary(e.target.value));
 
 /* ---------- AI matching ---------- */
@@ -459,7 +486,7 @@ let lastMatches = [];
 let matchIndex = 0;
 
 async function findLesson(userText, avoidLinks){
-  const library = FLAT.map((v,i)=>`${i}. פרק: ${v.chapter}${v.topic ? ' | נושא: '+v.topic : ''} | כותרת: ${v.title}`).join('\n');
+  const library = FLAT.map((v,i)=>`${i}. פרק: ${v.chapter}${v.topic ? ' | נושא: '+v.topic : ''} | כותרת: ${v.title}${v.summary ? ' | תקציר: '+v.summary : ''}`).join('\n');
 
   const system = `את עוזרת חמה ואמפתית שמלווה נשים בעולם של "בואי לתניא" - שיעורי תניא של שרי גרצמן שמחברים בין עבודה רגשית פנימית לחוכמת התניא.
 תפקידך: לקרוא את מה שהאישה כותבת (מצב רגשי, שאלה, התמודדות), ולבחור מתוך רשימת השיעורים למטה את השיעור שהכי רלוונטי עבורה כרגע.
@@ -498,9 +525,29 @@ function showResult(video, reason){
   document.getElementById('res-reason').textContent = reason;
   document.getElementById('res-iframe').src = `https://www.youtube.com/embed/${ytId(video.link)}`;
   document.getElementById('res-open').href = video.link;
+
+  const shortStage = document.getElementById('result-short-stage');
+  const fullStage = document.getElementById('result-full-stage');
+  if(video.short){
+    document.getElementById('short-title').textContent = video.title || video.chapter;
+    document.getElementById('short-iframe').src = `https://www.youtube.com/embed/${ytId(video.short)}`;
+    shortStage.style.display = 'block';
+    fullStage.style.display = 'none';
+  }else{
+    document.getElementById('short-iframe').src = '';
+    shortStage.style.display = 'none';
+    fullStage.style.display = 'block';
+  }
+
   resultEl.classList.add('show');
   resultEl.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
+
+document.getElementById('short-continue-btn').addEventListener('click', ()=>{
+  document.getElementById('short-iframe').src = '';
+  document.getElementById('result-short-stage').style.display = 'none';
+  document.getElementById('result-full-stage').style.display = 'block';
+});
 
 async function runSearch(){
   const text = feelingInput.value.trim();
@@ -558,7 +605,7 @@ function buildTopicList(){
       const key = ch.topic + '|' + match.link;
       if(!seen.has(key)){
         seen.add(key);
-        topics.push({label: ch.topic, chapter: ch.chapter, chTopic: ch.topic, title: match.title, link: match.link});
+        topics.push({label: ch.topic, chapter: ch.chapter, chTopic: ch.topic, title: match.title, link: match.link, short: match.short || null});
       }
     }
     ch.items.forEach(it => {
@@ -566,7 +613,7 @@ function buildTopicList(){
         const key = it.title + '|' + it.link;
         if(!seen.has(key)){
           seen.add(key);
-          topics.push({label: it.title, chapter: ch.chapter, chTopic: ch.topic, title: it.title, link: it.link});
+          topics.push({label: it.title, chapter: ch.chapter, chTopic: ch.topic, title: it.title, link: it.link, short: it.short || null});
         }
       }
     });
@@ -586,6 +633,20 @@ function renderTopics(){
       document.getElementById('topic-chapter').textContent = t.chTopic && t.chTopic !== t.title ? `${t.chapter} · ${t.chTopic}` : t.chapter;
       document.getElementById('topic-iframe').src = `https://www.youtube.com/embed/${ytId(t.link)}`;
       document.getElementById('topic-open').href = t.link;
+
+      const shortStage = document.getElementById('topic-short-stage');
+      const fullStage = document.getElementById('topic-full-stage');
+      if(t.short){
+        document.getElementById('topic-short-title').textContent = t.title;
+        document.getElementById('topic-short-iframe').src = `https://www.youtube.com/embed/${ytId(t.short)}`;
+        shortStage.style.display = 'block';
+        fullStage.style.display = 'none';
+      }else{
+        document.getElementById('topic-short-iframe').src = '';
+        shortStage.style.display = 'none';
+        fullStage.style.display = 'block';
+      }
+
       const resEl = document.getElementById('topic-result');
       resEl.classList.add('show');
       resEl.scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -593,7 +654,12 @@ function renderTopics(){
     topicGridEl.appendChild(pill);
   });
 }
-renderTopics();
+
+document.getElementById('topic-short-continue-btn').addEventListener('click', ()=>{
+  document.getElementById('topic-short-iframe').src = '';
+  document.getElementById('topic-short-stage').style.display = 'none';
+  document.getElementById('topic-full-stage').style.display = 'block';
+});
 
 /* ---------- admin panel ---------- */
 const ADMIN_PASSWORD = "בואילתניא2026"; // אפשר לשנות סיסמה כאן
@@ -640,7 +706,9 @@ document.getElementById('admin-add-btn').addEventListener('click', ()=>{
   const chapter = document.getElementById('admin-chapter').value.trim();
   const topic = document.getElementById('admin-topic').value.trim();
   const title = document.getElementById('admin-title').value.trim();
+  const summary = document.getElementById('admin-summary').value.trim();
   const link = document.getElementById('admin-link').value.trim();
+  const short = document.getElementById('admin-short').value.trim();
   const errEl = document.getElementById('admin-add-error');
   errEl.classList.remove('show');
 
@@ -654,6 +722,11 @@ document.getElementById('admin-add-btn').addEventListener('click', ()=>{
     errEl.classList.add('show');
     return;
   }
+  if(short && !ytId(short)){
+    errEl.textContent = 'קישור הסרטון הקצר לא נראה כמו קישור יוטיוב תקין.';
+    errEl.classList.add('show');
+    return;
+  }
 
   let ch = VIDEOS.find(c => c.chapter === chapter);
   if(!ch){
@@ -662,7 +735,7 @@ document.getElementById('admin-add-btn').addEventListener('click', ()=>{
   }else if(topic && !ch.topic){
     ch.topic = topic;
   }
-  ch.items.push({title: title, link: link});
+  ch.items.push({title: title, link: link, summary: summary || null, short: short || null});
 
   rebuildFlat();
   renderLibrary(document.getElementById('lib-search').value);
@@ -672,7 +745,9 @@ document.getElementById('admin-add-btn').addEventListener('click', ()=>{
   document.getElementById('admin-chapter').value = '';
   document.getElementById('admin-topic').value = '';
   document.getElementById('admin-title').value = '';
+  document.getElementById('admin-summary').value = '';
   document.getElementById('admin-link').value = '';
+  document.getElementById('admin-short').value = '';
   document.getElementById('admin-success').classList.add('show');
   setTimeout(()=> document.getElementById('admin-success').classList.remove('show'), 3500);
 });
@@ -696,6 +771,50 @@ document.getElementById('admin-export-btn').addEventListener('click', ()=>{
   a.click();
   a.remove();
 });
+
+/* ---------- load videos from Supabase ---------- */
+const SUPABASE_URL = 'https://rvrvpcuzzdpklcvhprfy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CMWZcYVjJwslvlpx1jUKWw_7GxUOfVu';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadVideosFromSupabase(){
+  try{
+    const { data, error } = await sb.from('videos').select('*').order('sort_order', { ascending: true });
+    if(error || !data || !data.length){
+      console.error('Supabase load error', error);
+      return false;
+    }
+    const map = new Map();
+    data.forEach(row=>{
+      if(!map.has(row.chapter)){
+        map.set(row.chapter, {chapter: row.chapter, topic: row.topic, items: []});
+      }
+      map.get(row.chapter).items.push({
+        title: row.title,
+        link: row.link,
+        summary: row.summary || null,
+        short: row.short || null
+      });
+    });
+    VIDEOS = Array.from(map.values());
+    return true;
+  }catch(err){
+    console.error('Supabase fetch failed', err);
+    return false;
+  }
+}
+
+(async function initApp(){
+  const ok = await loadVideosFromSupabase();
+  if(!ok){
+    const noRes = document.getElementById('no-results');
+    noRes.textContent = 'לא הצלחנו לטעון את ספריית השיעורים כרגע. נסי לרענן את הדף.';
+    noRes.style.display = 'block';
+  }
+  rebuildFlat();
+  renderLibrary('');
+  renderTopics();
+})();
 </script>
 </body>
 </html>
