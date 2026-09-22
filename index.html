@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="בואי לתניא">
 <link rel="apple-touch-icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
 <link rel="icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Frank+Ruhl+Libre:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -371,25 +371,12 @@
 </div>
 
 <script>
-// PWA manifest (built as a blob so the app is installable even as a single file)
-(function(){
-  const manifest = {
-    name: "בואי לתניא - שרי גרצמן",
-    short_name: "בואי לתניא",
-    start_url: ".",
-    display: "standalone",
-    background_color: "#fbf5ee",
-    theme_color: "#5a132c",
-    dir: "rtl",
-    lang: "he",
-    icons: [
-      { src: "https://boeilatanya.ravpage.co.il/1000348220.png", sizes: "192x192", type: "image/png" },
-      { src: "https://boeilatanya.ravpage.co.il/1000348220.png", sizes: "512x512", type: "image/png" }
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
-  document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
-})();
+// Register the service worker - Android needs this present for the "Install app" prompt to appear
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 
 /*VIDEOS_START*/
 let VIDEOS = [];
