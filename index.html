@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="בואי לתניא">
-<link rel="apple-touch-icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
-<link rel="icon" href="https://boeilatanya.ravpage.co.il/1000348220.png">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="icon" href="/icon-192.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Frank+Ruhl+Libre:wght@400;500;600;700&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
 
   /* header */
   header{text-align:center;margin-bottom:22px;}
-  .logo{width:74px;height:74px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow);border:3px solid var(--cream);}
+  .logo{max-width:300px;width:100%;height:auto;display:block;margin:0 auto;}
   h1{
     font-family:'Suez One',serif;
     font-size:2rem;
@@ -208,6 +208,34 @@
 
   footer{text-align:center;margin-top:40px;color:var(--ink-soft);font-size:.85rem;}
 
+  /* --- floating buttons --- */
+  .fab-stack{
+    position:fixed;bottom:22px;left:18px;z-index:500;
+    display:flex;flex-direction:column;gap:12px;align-items:flex-start;
+  }
+  .fab{
+    width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+    border:none;cursor:pointer;text-decoration:none;
+    transition:transform .15s;
+  }
+  .fab:hover{transform:scale(1.06);}
+  .fab-whatsapp{background:#25D366;}
+  .fab-share{background:var(--wine);}
+  .fab-toast{
+    position:absolute;bottom:0;left:62px;
+    background:var(--wine);color:#fff;font-size:.85rem;
+    padding:10px 16px;border-radius:12px;white-space:nowrap;
+    box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transform:translateY(6px);
+    transition:opacity .25s, transform .25s;
+  }
+  .fab-toast.show{opacity:1;transform:translateY(0);}
+  @media (max-width: 480px){
+    .fab-toast{white-space:normal;max-width:180px;left:60px;font-size:.8rem;}
+  }
+
   /* --- topics panel --- */
   .topic-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:10px;}
   .topic-pill{
@@ -255,9 +283,7 @@
 <body>
 <div class="wrap">
   <header>
-    <img class="logo" src="https://boeilatanya.ravpage.co.il/1000348220.png" alt="בואי לתניא">
-    <h1>בואי לתניא</h1>
-    <p class="byline">עם שרי גרצמן <span class="heart">♡</span></p>
+    <img class="logo" src="/logo-header.png" alt="בואי לתניא - עם שרי גרצמן">
   </header>
 
   <div class="tabs">
@@ -338,6 +364,16 @@
   </section>
 
   <footer>בואי לתניא · שרי גרצמן <span id="admin-trigger" style="cursor:default;">♡</span></footer>
+</div>
+
+<div class="fab-stack">
+  <a class="fab fab-whatsapp" href="https://wa.me/972546470868" target="_blank" rel="noopener" aria-label="שליחת הודעת ווטסאפ לשרי">
+    <svg viewBox="0 0 32 32" width="26" height="26"><path fill="#fff" d="M16.004 3C9.377 3 4 8.373 4 15c0 2.32.657 4.49 1.797 6.34L4 29l7.86-1.76A11.93 11.93 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.6a9.55 9.55 0 0 1-4.87-1.33l-.35-.21-4.66 1.04 1.02-4.55-.23-.37A9.55 9.55 0 1 1 25.55 15a9.56 9.56 0 0 1-9.546 9.6Zm5.24-7.16c-.29-.14-1.7-.84-1.96-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.33.21-.62.07-.29-.14-1.22-.45-2.32-1.43-.86-.77-1.44-1.71-1.6-2-.17-.29-.02-.45.12-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49-.17-.01-.36-.01-.55-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.43 1.03 2.81 1.17 3 .14.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.31.19 1.81.11.55-.08 1.7-.7 1.94-1.37.24-.67.24-1.24.17-1.37-.07-.12-.26-.19-.55-.33Z"/></svg>
+  </a>
+  <button class="fab fab-share" id="share-btn" aria-label="שיתוף האפליקציה">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#fff" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A2.99 2.99 0 1 0 6 15.19l7.13 4.16c-.05.21-.08.43-.08.65a2.92 2.92 0 1 0 2.95-3Z"/></svg>
+  </button>
+  <div class="fab-toast" id="fab-toast">הקישור הועתק! אפשר להדביק ולשלוח לכל מי שרוצים</div>
 </div>
 
 <div class="admin-overlay" id="admin-overlay">
@@ -790,6 +826,27 @@ async function loadVideosFromSupabase(){
     return false;
   }
 }
+
+/* ---------- share button ---------- */
+document.getElementById('share-btn').addEventListener('click', async ()=>{
+  const shareData = {
+    title: 'בואי לתניא - שרי גרצמן',
+    text: 'אפליקציה עם שיעורי תניא לפי מה שעובר עלייך - ספרי לה מה מרגישה ותקבלי שיעור מתאים 💕',
+    url: window.location.href
+  };
+  const toast = document.getElementById('fab-toast');
+  if(navigator.share){
+    try{ await navigator.share(shareData); }catch(err){ /* user cancelled - fine */ }
+  }else{
+    try{
+      await navigator.clipboard.writeText(shareData.url);
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), 3000);
+    }catch(err){
+      window.prompt('העתיקי את הקישור:', shareData.url);
+    }
+  }
+});
 
 (async function initApp(){
   const ok = await loadVideosFromSupabase();
