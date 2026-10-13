@@ -208,6 +208,18 @@
 
   footer{text-align:center;margin-top:40px;color:var(--ink-soft);font-size:.85rem;}
 
+
+  /* --- install button --- */
+  .install-row{display:none;justify-content:center;margin:0 0 18px;}
+  .install-row.show{display:flex;}
+  .install-btn{
+    background:#fff;border:1.5px solid var(--gold-soft);color:var(--wine);
+    padding:10px 22px;border-radius:999px;font-size:.92rem;font-weight:700;
+    cursor:pointer;box-shadow:0 3px 10px rgba(58,20,32,.08);
+    font-family:'Assistant',sans-serif;transition:background .2s, transform .15s;
+  }
+  .install-btn:hover{background:var(--blush);transform:translateY(-1px);}
+
   /* --- floating buttons --- */
   .fab-stack{
     position:fixed;bottom:22px;left:18px;z-index:500;
@@ -235,6 +247,30 @@
   @media (max-width: 480px){
     .fab-toast{white-space:normal;max-width:180px;left:60px;font-size:.8rem;}
   }
+
+  /* --- community invitation card --- */
+  .community-card{
+    margin-top:22px;text-align:center;
+    background:linear-gradient(160deg,var(--wine) 0%, var(--wine-deep) 100%);
+    border:1px solid var(--gold);
+    border-radius:20px;padding:26px 22px;
+    box-shadow:var(--shadow);color:#fff;
+  }
+  .community-card .c-kicker{color:var(--gold-soft);font-size:.85rem;font-weight:700;letter-spacing:.5px;margin-bottom:6px;}
+  .community-card h4{
+    font-family:'Frank Ruhl Libre',serif;font-size:1.35rem;font-weight:600;
+    margin:0 0 6px;color:#fff;line-height:1.4;
+  }
+  .community-card p{margin:0 0 18px;color:#f3e3de;font-size:.98rem;}
+  .community-btn{
+    display:inline-block;background:var(--gold-soft);color:var(--wine);
+    text-decoration:none;font-weight:800;font-size:1rem;
+    padding:12px 28px;border-radius:999px;
+    box-shadow:0 6px 16px rgba(0,0,0,.25);
+    transition:transform .15s;font-family:'Assistant',sans-serif;
+  }
+  .community-btn:hover{transform:translateY(-1px);}
+  #panel-library .community-card{margin-top:28px;}
 
   /* --- topics panel --- */
   .topic-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:10px;}
@@ -286,6 +322,10 @@
     <img class="logo" src="/logo-header.png" alt="בואי לתניא - עם שרי גרצמן">
   </header>
 
+  <div class="install-row" id="install-row">
+    <button class="install-btn" id="install-btn">📲 הורדת האפליקציה למסך הבית</button>
+  </div>
+
   <div class="tabs">
     <div class="tab active" data-tab="ask">מה עובר עלייך?</div>
     <div class="tab" data-tab="topics">לפי נושא</div>
@@ -329,6 +369,12 @@
           <a class="link-btn" id="res-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
           <span class="link-btn" id="res-another" style="cursor:pointer;">שיעור נוסף בנושא הזה</span>
         </div>
+        <div class="community-card">
+          <div class="c-kicker">♡ הזמנה אישית</div>
+          <h4>מוזמנת להצטרף לקהילת הנשים של בואי לתניא</h4>
+          <p>קהילת בואי לתניא - לנשים שמחות יותר</p>
+          <a class="community-btn" href="https://chat.whatsapp.com/JdC25hQrNA53aJRZb3TNKQ" target="_blank" rel="noopener">להצטרפות לקהילה בוואטסאפ</a>
+        </div>
       </div>
     </div>
   </section>
@@ -353,6 +399,12 @@
         <div class="result-actions">
           <a class="link-btn" id="topic-open" href="#" target="_blank" rel="noopener">לצפייה ביוטיוב</a>
         </div>
+        <div class="community-card">
+          <div class="c-kicker">♡ הזמנה אישית</div>
+          <h4>מוזמנת להצטרף לקהילת הנשים של בואי לתניא</h4>
+          <p>קהילת בואי לתניא - לנשים שמחות יותר</p>
+          <a class="community-btn" href="https://chat.whatsapp.com/JdC25hQrNA53aJRZb3TNKQ" target="_blank" rel="noopener">להצטרפות לקהילה בוואטסאפ</a>
+        </div>
       </div>
     </div>
   </section>
@@ -361,6 +413,12 @@
     <input class="lib-search" id="lib-search" placeholder="חיפוש בספרייה — פרק, נושא או מילת מפתח...">
     <div class="accordion" id="accordion"></div>
     <div class="no-results" id="no-results" style="display:none;">לא נמצאו שיעורים תואמים</div>
+        <div class="community-card">
+          <div class="c-kicker">♡ הזמנה אישית</div>
+          <h4>מוזמנת להצטרף לקהילת הנשים של בואי לתניא</h4>
+          <p>קהילת בואי לתניא - לנשים שמחות יותר</p>
+          <a class="community-btn" href="https://chat.whatsapp.com/JdC25hQrNA53aJRZb3TNKQ" target="_blank" rel="noopener">להצטרפות לקהילה בוואטסאפ</a>
+        </div>
   </section>
 
   <footer>בואי לתניא · שרי גרצמן <span id="admin-trigger" style="cursor:default;">♡</span></footer>
@@ -374,6 +432,14 @@
     <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#fff" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A2.99 2.99 0 1 0 6 15.19l7.13 4.16c-.05.21-.08.43-.08.65a2.92 2.92 0 1 0 2.95-3Z"/></svg>
   </button>
   <div class="fab-toast" id="fab-toast">הקישור הועתק! אפשר להדביק ולשלוח לכל מי שרוצים</div>
+</div>
+
+<div class="admin-overlay" id="install-overlay">
+  <div class="admin-box" style="text-align:center;">
+    <h3 id="install-modal-title">איך מתקינים</h3>
+    <div id="install-modal-body" style="text-align:right;color:var(--ink);font-size:1rem;line-height:1.9;"></div>
+    <span class="link-btn admin-close" id="install-modal-close" style="margin-top:14px;">הבנתי, סגירה</span>
+  </div>
 </div>
 
 <div class="admin-overlay" id="admin-overlay">
@@ -827,6 +893,55 @@ async function loadVideosFromSupabase(){
   }
 }
 
+/* ---------- install button ---------- */
+const installRow = document.getElementById('install-row');
+const installBtn = document.getElementById('install-btn');
+const installOverlay = document.getElementById('install-overlay');
+let deferredInstallPrompt = null;
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+if(!isStandalone()){ installRow.classList.add('show'); }
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if(!isStandalone()) installRow.classList.add('show');
+});
+window.addEventListener('appinstalled', ()=>{
+  installRow.classList.remove('show');
+  deferredInstallPrompt = null;
+});
+
+function showInstallInstructions(){
+  const titleEl = document.getElementById('install-modal-title');
+  const bodyEl = document.getElementById('install-modal-body');
+  if(isIOS()){
+    titleEl.textContent = 'התקנה באייפון';
+    bodyEl.innerHTML = '1. הקישי על כפתור השיתוף <b>⬆️</b> בתחתית מסך ה-Safari<br><br>2. גללי ובחרי <b>"הוספה למסך הבית"</b><br><br>3. הקישי <b>"הוספה"</b> למעלה';
+  }else{
+    titleEl.textContent = 'התקנה';
+    bodyEl.innerHTML = 'בכרום: הקישי על שלוש הנקודות למעלה, ואז <b>"התקנה ויצירת קיצור דרך"</b>.<br><br>בדפדפנים אחרים, חפשי אפשרות דומה בשם "הוספה למסך הבית" בתפריט הדפדפן.';
+  }
+  installOverlay.classList.add('show');
+}
+installBtn.addEventListener('click', async ()=>{
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if(choice.outcome === 'accepted') installRow.classList.remove('show');
+  }else{
+    showInstallInstructions();
+  }
+});
+document.getElementById('install-modal-close').addEventListener('click', ()=>{ installOverlay.classList.remove('show'); });
+installOverlay.addEventListener('click', (e)=>{ if(e.target.id === 'install-overlay') installOverlay.classList.remove('show'); });
+
 /* ---------- share button ---------- */
 document.getElementById('share-btn').addEventListener('click', async ()=>{
   const shareData = {
@@ -836,7 +951,7 @@ document.getElementById('share-btn').addEventListener('click', async ()=>{
   };
   const toast = document.getElementById('fab-toast');
   if(navigator.share){
-    try{ await navigator.share(shareData); }catch(err){ /* user cancelled - fine */ }
+    try{ await navigator.share(shareData); }catch(err){}
   }else{
     try{
       await navigator.clipboard.writeText(shareData.url);
