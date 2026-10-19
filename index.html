@@ -611,6 +611,7 @@ ${avoidLinks && avoidLinks.length ? 'הימנעי מהאינדקסים הבאי�
 }
 
 function showResult(video, reason){
+  track('lesson_shown', video.link);
   document.getElementById('res-title').textContent = video.title || video.chapter;
   document.getElementById('res-chapter').textContent = video.topic ? `${video.chapter} · ${video.topic}` : video.chapter;
   document.getElementById('res-reason').textContent = reason;
@@ -868,6 +869,45 @@ const SUPABASE_URL = 'https://rvrvpcuzzdpklcvhprfy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CMWZcYVjJwslvlpx1jUKWw_7GxUOfVu';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* ---------- סטטיסטיקה אנונימית (בלי שום טקסט של המשתמשת) ---------- */
+function getDeviceId(){
+  try{
+    let id = localStorage.getItem('bl_device');
+    if(!id){
+      id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(16).slice(2));
+      localStorage.setItem('bl_device', id);
+    }
+    return id;
+  }catch(e){ return null; }
+}
+function getPlatform(){
+  const ua = navigator.userAgent || '';
+  if(/iphone|ipad|ipod/i.test(ua)) return 'ios';
+  if(/android/i.test(ua)) return 'android';
+  return 'other';
+}
+function track(eventName, lessonLink){
+  try{
+    sb.from('app_events').insert({
+      device_id: getDeviceId(),
+      event: eventName,
+      platform: getPlatform(),
+      lesson_link: lessonLink || null
+    }).then(()=>{}, ()=>{});
+  }catch(e){}
+}
+/* פתיחה מהאייקון במסך הבית: פעם אחת ליום לכל מכשיר */
+(function trackAppOpen(){
+  try{
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    if(!standalone) return;
+    const today = new Date().toISOString().slice(0,10);
+    if(localStorage.getItem('bl_open_day') === today) return;
+    localStorage.setItem('bl_open_day', today);
+    track('app_open');
+  }catch(e){}
+})();
+
 async function loadVideosFromSupabase(){
   try{
     const { data, error } = await sb.from('videos').select('*').order('sort_order', { ascending: true });
@@ -915,6 +955,7 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   if(!isStandalone()) installRow.classList.add('show');
 });
 window.addEventListener('appinstalled', ()=>{
+  track('installed');
   installRow.classList.remove('show');
   deferredInstallPrompt = null;
 });
