@@ -455,6 +455,9 @@
       <span class="link-btn admin-close" id="admin-close-1">סגירה</span>
     </div>
     <div id="admin-panel" style="display:none;">
+      <h3>סטטיסטיקה</h3>
+      <div id="admin-stats" style="font-size:.95rem;line-height:1.9;color:var(--ink);margin-bottom:6px;">טוענת נתונים...</div>
+      <hr class="admin-divider">
       <h3>הוספת שיעור</h3>
       <input list="chapter-list" id="admin-chapter" placeholder="שם הפרק (לדוגמה: פרק מ״ב)">
       <datalist id="chapter-list"></datalist>
@@ -783,12 +786,31 @@ function populateChapterList(){
   dl.innerHTML = VIDEOS.map(ch => `<option value="${ch.chapter}">`).join('');
 }
 
+function loadAdminStats(){
+  const box = document.getElementById('admin-stats');
+  box.textContent = 'טוענת נתונים...';
+  sb.rpc('get_stats').then(({data, error})=>{
+    if(error || !data){
+      box.textContent = 'אי אפשר לטעון נתונים כרגע (בדקי שהרצת את stats-function.sql ב-Supabase).';
+      return;
+    }
+    const s = data;
+    const top = (s.top_lessons || []).map(t=>`<li>${t.title} <b>(${t.times})</b></li>`).join('');
+    box.innerHTML =
+      `<div>📲 פתחו מהמסך הבית: <b>${s.open_devices}</b> מכשירים (אנדרואיד ${s.open_android}, אייפון ${s.open_ios})</div>`+
+      `<div>⬇️ התקנות שדווחו (אנדרואיד): <b>${s.installs}</b></div>`+
+      `<div>🔎 שיעורים שהוצגו: <b>${s.lessons_shown}</b> ב-${s.lesson_devices} מכשירים, ב-7 ימים אחרונים: <b>${s.lessons_7d}</b></div>`+
+      (top ? `<div style="margin-top:6px;">השיעורים שהוצגו הכי הרבה:</div><ol style="margin:4px 0 0;padding-right:20px;">${top}</ol>` : '');
+  });
+}
+
 document.getElementById('admin-login-btn').addEventListener('click', ()=>{
   const pw = document.getElementById('admin-password').value;
   if(pw === ADMIN_PASSWORD){
     document.getElementById('admin-login').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
     populateChapterList();
+    loadAdminStats();
   }else{
     document.getElementById('admin-login-error').classList.add('show');
   }
